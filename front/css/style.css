@@ -58,7 +58,7 @@ h2 {
 	background-color: var(--main-color);
 }
 .informations img {
-	height: 17px;
+	height: 171px;
 }
 .informations ul {
 	display: flex;
@@ -175,7 +175,10 @@ main {
 	white-space: normal;
 }
 
-
+#myImg {
+	width: 100%;
+	height: 100%;
+}
 
 
 /********/
