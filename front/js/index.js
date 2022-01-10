@@ -33,9 +33,6 @@ function printProducts(products) {
   itemsElemnt.appendChild(paragraphElement);
   paragraphElement.innerHTML = listOfProducts;
 
-
-
-
   //document.getElementById('items').innerHTML = listOfProducts;
 };
 
