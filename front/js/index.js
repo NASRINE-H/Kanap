@@ -27,7 +27,16 @@ function printProducts(products) {
           `
   );
   //On identifie l'id pour l'affichage du tableau 
-  document.getElementById('items').innerHTML = listOfProducts;
+
+  let itemsElemnt = document.getElementById("items");
+  let paragraphElement = document.createElement("p");
+  itemsElemnt.appendChild(paragraphElement);
+  paragraphElement.innerHTML = listOfProducts;
+
+
+
+
+  //document.getElementById('items').innerHTML = listOfProducts;
 };
 
 //pour afficher le nombre de produits dans le panier
