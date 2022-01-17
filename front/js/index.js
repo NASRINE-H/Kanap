@@ -1,6 +1,6 @@
  "use strict"; 
  //On récupère les informations de l'API 
-fetch(" http://localhost:3000/api/products")
+fetch("http://localhost:3000/api/products")
   //Récupérer une promesse sous forme de donnée Json 
   .then(response => response.json())
   //Récupérer la fonction pour l'afficher

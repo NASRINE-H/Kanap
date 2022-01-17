@@ -1,3 +1,4 @@
+"use strict";
 const paramsString = new URLSearchParams(window.location.search);
 const idUrl = paramsString.get("id");
 

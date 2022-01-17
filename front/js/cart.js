@@ -1,3 +1,4 @@
+"use strict";
 /*
 1) Les fonctions/conditions de validation des champs du formulaire:
  - validation des noms / prénom => fonction valider utiliser le regExp
@@ -44,7 +45,6 @@ function displayCart() {
 
 	let cart_items = document.getElementById("cart__items");
 	Object.values(cartItem).forEach(function (prod) {
-		console.log(prod);
 
 		let cart__item = document.createElement('article');
 		cart_items.appendChild(cart__item);
@@ -83,179 +83,39 @@ let total=`${prod.price}`*`${prod.inCart}`;
 	})
 }
 
+
+
+
+function totalCost()
+{ 
+  let cartItem = localStorage.getItem('cartProduct');
+  cartItem = JSON.parse(cartItem);
+  console.log(cartItem);
+
+  let cost=0;
+  for(let i in cartItem)
+  {
+    cost+=
+    parseFloat(cartItem[i].price)*parseFloat(cartItem[i].inCart);
+  }
+  localStorage.setItem('cartCost' ,cost);
+  console.log(cost);
+  let totalPrice =document.getElementById('totalPrice');
+  totalPrice.innerHTML+=`${cost}`;
+
+}
 let cartCost = localStorage.getItem("cartCost");
 
 displayCart();
-
+totalCost();
 //.................................. Le Formulair.................................//
 
 
 
-// let form = document.querySelector('#cart__order__form');
-// updateCart();
-
-// // Ecouter la modification du nom
-// form.lastName.addEventListener('change', function () {
-// 	validlastName(this);
-// });
-// // Ecouter la modification du prénom
-// form.firstName.addEventListener('change', function () {
-// 	validfirstName(this);
-// });
-// // Ecouter la modification de l'adresse
-// form.adress.addEventListener('change', function () {
-// 	validadress(this);
-// });
-// // Ecouter la modification de la ville
-// form.city.addEventListener('change', function () {
-// 	validcity(this);
-
-// });
-// // Ecouter la modification de l'E-mail
-// form.email.addEventListener('change', function () {
-// 	validEmail(this);
-
-// });
 
 
 
-// const sendHttpRequest = (method, url, data) => {
-// 	return fetch(url, {
-// 		method: method,
-// 		body: JSON.stringify(data),
-// 		headers: data ? { 'content-type': 'application/json' } : {}
 
-// 	})
-// 		.then(response => {
-// 			if (response.status >= 400) {
-// 				// Reponse Not OK !
-// 				return response.json().then(errResData => {
-// 					const error = new Error('something went wrong');
-// 					error.data = errResData;
-// 					throw error;
-// 				});
-// 			}
-// 			return response.json();
-// 		});
-// }
-
-// // Ecouter la soumission du formulaire
-// form.addEventListener('submit', function (e) {
-// 	e.preventDefault();
-// 	console.log("formulaire envoi en cours");
-// 	// pour casser l'envoi du formulaire
-// 	if (validlastName(form.lastName)
-// 		&& validfirstName(form.firstName)
-// 		&& validadress(form.adress)
-// 		&& validcity(form.city)
-// 		&& validEmail(form.email)) {
-// 		let contact = {
-// 			firstName: form.firstName.value,
-// 			lastName: form.lastName.value,
-// 			address: form.adress.value,
-// 			city: form.city.value,
-// 			email: form.email.value
-// 		};
-
-// 		let product = localStorage.getItem('cartProduct');
-// 		product = JSON.parse(product);
-
-// 		let i = 0;
-// 		let products = [];
-// 		for (item in product) {
-// 			products.push(item);
-// 			i++;
-// 		}
-
-// 		console.log("contact:", contact);
-// 		console.log("products:", products);
-// 		let cartTotal = localStorage.getItem("cartCost");
-
-// 		// Récupération de la réponse du serveur
-// 		const options = {
-// 			method: "POST",
-// 			body: JSON.stringify({ contact, products }),
-// 			headers: {
-// 				'content-Type': 'application/json'
-// 			}
-// 		};
-// 		fetch('http://localhost:3000/api/products', options)
-// 			.then(response => response.json())
-// 			.then((response) => {
-
-// 				// // on récupere l'identifiant de l'orderId
-// 				let recupOrderId = response.orderId;
-// 				console.log("orderId", recupOrderId);
-
-// 				// // on déclare une nouvelle variable en insérant l'orderId et le prix total
-// 				let orderRecap = { recupOrderId, cartTotal };
-// 				console.log(orderRecap)
-
-
-// 				// // on stock les données de l'orderId et du prix total dans le localstorage
-// 				localStorage.setItem("result", JSON.stringify(orderRecap))
-
-
-// 				// // on creer une fenetre demandant la validation de la commande 
-// 				let val = confirm("souhaitez-vous confirmer votre commande?");
-// 				console.log("confirmation : ", val);
-
-// 				if (val) {
-
-// 					printOrderRecap(cartTotal, recupOrderId);
-// 					//				window.location.href = "../front/commande.html";
-// 					/*				document.querySelector("#commande").innerHTML = "Votre commande !";
-					
-// 								 let cmd = document.getElementById('commande');
-// 								 let order = document.createElement('div');
-// 								 cmd.appendChild(order);
-// 								 let p = document.createElement('p')
-// 								 p.innerHTML = 'ORINOCO vous remercie pour votre commande !'
-// 								 order.appendChild(p) 
-// 								 let totalOrder = document.createElement('p')
-// 								 totalOrder.innerHTML = 'Total de la commande : ' + cartTotal + ' €'
-// 								 order.appendChild(totalOrder)
-// 								 let orderId = document.createElement('p')
-// 								 orderId.innerHTML = 'Numéro de commande : ' + recupOrderId
-// 								 order.appendChild(orderId)
-					
-// 					*/
-
-// 				}
-// 			})
-// 		//	form.submit();
-// 		//			console.log("contact est:",contact);
-// 		//			console.log("options est:",options);
-
-// 	}
-// 	else {
-// 		console.log("le formulaire n'est pas valide");
-// 	}
-// });
-// ***************** Validation Nom ********************
-const validlastName = function (inputlastName) {
-	// Creation de la reg exp pour validation nom
-	let lastNameRegExp = new RegExp(
-		'[A-Za-z ]+$'
-	);
-
-	// Recuperation de la balise span
-	let span = inputlastName.nextElementSibling;
-
-	// on test l'expression reguliere
-
-	if (lastNameRegExp.test(inputlastName.value)) {
-		span.innerHTML = 'Nom correct';
-		span.classList.remove('text-danger');
-		span.classList.add('text-success');
-		return true;
-	} else {
-		span.innerHTML = 'Nom incorrect';
-		span.classList.remove('text-success');
-		span.classList.add('text-danger');
-		return false;
-	}
-};
 
 // ****************validation prénom**************
 
@@ -267,23 +127,51 @@ const validfirstName = function (inputfirstName) {
 
 
 	// Recuperation de la balise span
-	let span = inputfirstName.nextElementSibling;
+	let errorMsg = document.getElementById("firstNameErrorMsg");
 
 	// on test l'expression reguliere
 
 	if (firstNameRegExp.test(inputfirstName.value)) {
-		span.innerHTML = 'Prenom correct';
-		span.classList.remove('text-danger');
-		span.classList.add('text-success');
+		errorMsg.innerHTML = 'Prenom correct';
+		errorMsg.classList.remove('text-danger');
+		errorMsg.classList.add('text-success');
 		return true;
 	} else {
-		span.innerHTML = 'Prenom incorrect';
-		span.classList.remove('text-success');
-		span.classList.add('text-danger');
+		errorMsg.innerHTML = 'Preom incorrect';
+		errorMsg.classList.remove('text-success');
+		errorMsg.classList.add('text-danger');
 		return false;
 	}
 
 };
+
+
+// ***************** Validation Nom ********************
+const validlastName = function (inputlastName) {
+	// Creation de la reg exp pour validation nom
+	let lastNameRegExp = new RegExp(
+		'[A-Za-z ]+$'
+	);
+
+	// Recuperation de la balise span
+	let errorMsg = document.getElementById("lastNameErrorMsg");
+
+	// on test l'expression reguliere
+
+	if (lastNameRegExp.test(inputlastName.value)) {
+		errorMsg.innerHTML = 'Nom correct';
+		errorMsg.classList.remove('text-danger');
+		errorMsg.classList.add('text-success');
+		return true;
+	} else {
+		errorMsg.innerHTML = 'Nom incorrect';
+		errorMsg.classList.remove('text-success');
+		errorMsg.classList.add('text-danger');
+		return false;
+	}
+	
+};
+
 // *****************************validation aderesse*****************
 
 const validadress = function (inputadress) {
@@ -294,19 +182,19 @@ const validadress = function (inputadress) {
 
 
 	// Recuperation de la balise span
-	let span = inputadress.nextElementSibling;
+	let errorMsg = document.getElementById("addressErrorMsg");
 
 	// on test l'expression reguliere
 
 	if (adressRegExp.test(inputadress.value)) {
-		span.innerHTML = 'adresse correct';
-		span.classList.remove('text-danger');
-		span.classList.add('text-success');
+		errorMsg.innerHTML = 'Addresse correct';
+		errorMsg.classList.remove('text-danger');
+		errorMsg.classList.add('text-success');
 		return true;
 	} else {
-		span.innerHTML = 'adresse incorrect';
-		span.classList.remove('text-success');
-		span.classList.add('text-danger');
+		errorMsg.innerHTML = 'Addresse incorrect';
+		errorMsg.classList.remove('text-success');
+		errorMsg.classList.add('text-danger');
 		return false;
 	}
 
@@ -320,21 +208,22 @@ const validcity = function (inputcity) {
 	);
 
 	// Recuperation de la balise span
-	let span = inputcity.nextElementSibling;
+	let errorMsg = document.getElementById("cityErrorMsg");
 
 	// on test l'expression reguliere
 
 	if (cityRegExp.test(inputcity.value)) {
-		span.innerHTML = 'ville correct';
-		span.classList.remove('text-danger');
-		span.classList.add('text-success');
+		errorMsg.innerHTML = 'city correct';
+		errorMsg.classList.remove('text-danger');
+		errorMsg.classList.add('text-success');
 		return true;
 	} else {
-		span.innerHTML = 'ville incorrect';
-		span.classList.remove('text-success');
-		span.classList.add('text-danger');
+		errorMsg.innerHTML = 'city incorrect';
+		errorMsg.classList.remove('text-success');
+		errorMsg.classList.add('text-danger');
 		return false;
 	}
+
 };
 
 
@@ -352,25 +241,197 @@ const validEmail = function (inputEmail) {
 
 
 	// Recuperation de la balise span
-	let span = inputEmail.nextElementSibling;
+	let errorMsg = document.getElementById("emailErrorMsg");
 
 	// on test l'expression reguliere
 
 	if (emailRegExp.test(inputEmail.value)) {
-		span.innerHTML = 'Email correct';
-		span.classList.remove('text-danger');
-		span.classList.add('text-success');
+		errorMsg.innerHTML = 'email correct';
+		errorMsg.classList.remove('text-danger');
+		errorMsg.classList.add('text-success');
 		return true;
 	} else {
-		span.innerHTML = 'Email incorrect';
-		span.classList.remove('text-success');
-		span.classList.add('text-danger');
+		errorMsg.innerHTML = 'email incorrect';
+		errorMsg.classList.remove('text-success');
+		errorMsg.classList.add('text-danger');
 		return false;
 	}
 
-
-
 };
+
+let form = document.querySelector(".cart__order__form");
+
+// Ecouter la modification du nom
+form.firstName.addEventListener('change', function () {
+	validfirstName(this);
+});
+// Ecouter la modification du prénom
+form.lastName.addEventListener('change', function () {
+	validlastName(this);
+});
+// Ecouter la modification de l'adresse
+form.address.addEventListener('change', function () {
+	validadress(this);
+});
+// Ecouter la modification de la ville
+form.city.addEventListener('change', function () {
+	validcity(this);
+
+});
+// Ecouter la modification de l'E-mail
+form.email.addEventListener('change', function () {
+	validEmail(this);
+
+});
+
+const sendHttpRequest = (method, url, data) => {
+	return fetch(url, {
+		method: method,
+		body: JSON.stringify(data),
+		headers: data ? { 'content-type': 'application/json' } : {}
+
+	})
+		.then(response => {
+			if (response.status >= 400) {
+				// Reponse Not OK !
+				return response.json().then(errResData => {
+					const error = new Error('something went wrong');
+					error.data = errResData;
+					throw error;
+				});
+			}
+			return response.json();
+		});
+}
+
+// Ecouter la soumission du formulaire
+form.addEventListener('submit', function (e) {
+	e.preventDefault();
+	console.log("formulaire envoi en cours");
+	// pour casser l'envoi du formulaire
+	if (validfirstName(form.firstName)
+		&& validlastName(form.lastName)
+		&& validadress(form.address)
+		&& validcity(form.city)
+		&& validEmail(form.email)) {
+		let contact = {
+			firstName: form.firstName.value,
+			lastName: form.lastName.value,
+			address: form.address.value,
+			city: form.city.value,
+			email: form.email.value
+		};
+		let product = localStorage.getItem('cartProduct');
+		product = JSON.parse(product);
+
+		let i = 0;
+		let products = [];
+		for (let item in product) {
+			products.push(item);
+			i++;
+		}
+
+		console.log("contact:", contact);
+		console.log("products:", products);
+
+		let cartTotal = localStorage.getItem("cartCost");
+
+		// Récupération de la réponse du serveur
+		const options = {
+			method: "POST",
+			body: JSON.stringify({ contact, products }),
+			headers: {
+				'content-Type': 'application/json'
+			}
+		};
+
+		fetch("http://localhost:3000/api/products", {
+			method: "POST",
+			headers: { 
+		'Accept': 'application/json', 
+		'Content-Type': 'application/json' 
+		},
+			body: JSON.stringify({ contact, products })})
+		
+//		fetch('http://localhost:3000/api/products', options)
+		.then(response => response.json())
+		.then((response) => {
+
+			// // on récupere l'identifiant de l'orderId
+			let recupOrderId = response.orderId;
+			console.log("orderId", recupOrderId);
+
+			// // on déclare une nouvelle variable en insérant l'orderId et le prix total
+			let orderRecap = { recupOrderId, cartTotal };
+			console.log(orderRecap)
+
+
+			// // on stock les données de l'orderId et du prix total dans le localstorage
+			localStorage.setItem("result", JSON.stringify(orderRecap))
+
+
+			// // on creer une fenetre demandant la validation de la commande 
+			let val = confirm("souhaitez-vous confirmer votre commande?");
+			console.log("confirmation : ", val);
+			if (val) {
+
+				printOrderRecap(cartTotal, recupOrderId);
+//				window.location.href = "../front/commande.html";
+				/*				document.querySelector("#commande").innerHTML = "Votre commande !";
+				
+							 let cmd = document.getElementById('commande');
+							 let order = document.createElement('div');
+							 cmd.appendChild(order);
+							 let p = document.createElement('p')
+							 p.innerHTML = 'ORINOCO vous remercie pour votre commande !'
+							 order.appendChild(p) 
+							 let totalOrder = document.createElement('p')
+							 totalOrder.innerHTML = 'Total de la commande : ' + cartTotal + ' €'
+							 order.appendChild(totalOrder)
+							 let orderId = document.createElement('p')
+							 orderId.innerHTML = 'Numéro de commande : ' + recupOrderId
+							 order.appendChild(orderId)
+				
+				*/
+				
+			}
+		})
+
+
+	//	form.submit();
+	//			console.log("contact est:",contact);
+	//			console.log("options est:",options);
+
+}
+else {
+	console.log("le formulaire n'est pas valide");
+}
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function printOrderRecap(cartTotal, recupOrderId) {
@@ -394,16 +455,18 @@ function printOrderRecap(cartTotal, recupOrderId) {
 
 };
 
-function updateCart() {
-	let productNumbers = localStorage.getItem('cartNumbers');
+// function updateCart() {
+// 	let productNumbers = localStorage.getItem('cartNumbers');
 
-	if (productNumbers) {
-		document.querySelector('.cart span').textContent = productNumbers;
-	}
-}
-function hide(elements) {
-	elements = elements.length ? elements : [elements];
-	for (var index = 0; index < elements.length; index++) {
-		elements[index].style.display = 'none';
-	}
-}
+// 	if (productNumbers) {
+// 		document.querySelector('.cart span').textContent = productNumbers;
+// 	}
+// }
+// function hide(elements) {
+// 	elements = elements.length ? elements : [elements];
+// 	for (var index = 0; index < elements.length; index++) {
+// 		elements[index].style.display = 'none';
+// 	}
+// }
+// 		}
+
