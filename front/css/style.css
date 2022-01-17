@@ -58,7 +58,7 @@ h2 {
 	background-color: var(--main-color);
 }
 .informations img {
-	height: 20px;
+	height: 17px;
 }
 .informations ul {
 	display: flex;
@@ -150,8 +150,8 @@ main {
 	border-radius: 10px;
 }
 .items article img {
-	width: 50px;
-	height: 50px;
+	width: 160px;
+	height: 160px;
 	object-fit: cover;
 	border-radius: 10px;
 }
@@ -175,10 +175,7 @@ main {
 	white-space: normal;
 }
 
-#myImg {
-	width: 50%;
-	height: 50%;
-}
+
 
 
 /********/

@@ -14,10 +14,10 @@ if (idUrl != null) {
   // let url = "http://localhost:3000/api/products" + idUrl;
 
   fetch(urlApi())
-    .then(response => response.json())
+   .then(response => response.json())
     // Récupérer la fonction pour l'afficher
     .then(products => {
-      // printProducts(products);
+       printProducts(products);
       let Selectedproduct = {
         name: products.name,
         price: products.price / 100,
@@ -41,7 +41,6 @@ function printProducts(Selectedproduct) {
   document.querySelector("#price").innerHTML = Selectedproduct.price;
   document.querySelector("#description").innerHTML = Selectedproduct.description;
   document.querySelector("#colors").innerHTML = Selectedproduct.colors;
-
   document.querySelector("#quantity").innerHTML = Selectedproduct.inCart;
 
 }
