@@ -144,7 +144,7 @@ function totalCost() {
   let cartItem = localStorage.getItem('cartProduct');
   cartItem = JSON.parse(cartItem);
   let cost = 0;
-  for (i in cartItem) {
+  for (let i in cartItem) {
     cost +=
       parseFloat(cartItem[i].price) * parseFloat(cartItem[i].inCart);
   }

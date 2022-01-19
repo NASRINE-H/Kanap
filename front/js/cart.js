@@ -23,93 +23,113 @@
 
 
 //pour afficher le nombre de produits dans le panier
-let productNumbers = localStorage.getItem('cartNumbers');
-if (productNumbers) {
-	document.querySelector('.cart span').textContent = productNumbers;
+function displayCartNumber() {
+	let productNumbers = localStorage.getItem('cartNumbers');
+	if (productNumbers) {
+		document.querySelector('.cart span').textContent = productNumbers;
+	}
 }
-
 
 //aficher les produits selectionnés sur la page cart et fair le prix totale
 
 function displayCart() {
 	let cartItem = localStorage.getItem("cartProduct");
 	cartItem = JSON.parse(cartItem);
-	console.log(cartItem);
-
-	// let cart_items = document.getElementById("cart__item__content");
-	// let cart_items = document.getElementById("cart__item__content__titlePrice");
-	// let cart_items = document.getElementById("cart__item__content__settings__quantity");
-
-	// let panier = document.createElement('div');
-	// cart_items.appendChild(panier);
 
 	let cart_items = document.getElementById("cart__items");
-	Object.values(cartItem).forEach(function (prod) {
+	if(cartItem!=null)
+	
+	{	
+		Object.values(cartItem).forEach(function (prod) {
 
-		let cart__item = document.createElement('article');
-		cart_items.appendChild(cart__item);
-		cart__item.setAttribute("data-id",`${prod._id}`);
-		cart__item.setAttribute("data-color",`${prod.colors}`);
-		cart__item.classList.add('cart__item')
-	    let cart__item__img = document.createElement("div");
-		cart__item__img.innerHTML += `
-		<img src=${prod.imageUrl} alt=${prod.name} >
-		`
-		cart__item__img.classList.add('cart__item__img')
-		cart__item.appendChild(cart__item__img);
-	    let cart__item__content = document.createElement("div");
-		cart__item.appendChild(cart__item__content);
-		let incart=parseInt(`${prod.inCart}`);
-		cart__item__img.innerHTML += `
-				<div class="cart__item__content__description">
-                    <h2>${prod.name}</h2>
-                    <p>${prod.colors}</p>
-                    <p>${prod.price} €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=`+incart+`>
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-				  `
+			let cart__item = document.createElement('article');
+			cart_items.appendChild(cart__item);
+			cart__item.setAttribute("data-id", `${prod._id}`);
+			cart__item.setAttribute("data-color", `${prod.colors}`);
+			cart__item.classList.add('cart__item')
+			let cart__item__img = document.createElement("div");
+			cart__item__img.innerHTML += `
+			<img src=${prod.imageUrl} alt=${prod.name} >
+			`
+			cart__item__img.classList.add('cart__item__img')
+			cart__item.appendChild(cart__item__img);
+			let cart__item__content = document.createElement("div");
+			cart__item.appendChild(cart__item__content);
+			let incart = parseInt(`${prod.inCart}`);
+			cart__item__img.innerHTML += `
+					<div class="cart__item__content__description">
+						<h2>${prod.name}</h2>
+						<p>${prod.colors}</p>
+						<p>${prod.price} €</p>
+					</div>
+					<div class="cart__item__content__settings">
+						<div class="cart__item__content__settings__quantity">
+						<p>Qté : </p>
+						<input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=`+ incart + `>
+						</div>
+						<div class="cart__item__content__settings__delete">
+						<p class="deleteItem">Supprimer</p>
+						</div>
+					</div>
+					`
 
-let total=`${prod.price}`*`${prod.inCart}`;
+					let total = `${prod.price}` * `${prod.inCart}`;
+		})
 
 
-	})
+	}
+	else
+	{
+		console.log("panier vide");
+	}
+	
 }
 
 
 
 
-function totalCost()
-{ 
-  let cartItem = localStorage.getItem('cartProduct');
-  cartItem = JSON.parse(cartItem);
-  console.log(cartItem);
+function totalCost() {
+	let cartItem = localStorage.getItem('cartProduct');
+	cartItem = JSON.parse(cartItem);
+	console.log(cartItem);
 
-  let cost=0;
-  for(let i in cartItem)
-  {
-    cost+=
-    parseFloat(cartItem[i].price)*parseFloat(cartItem[i].inCart);
-  }
-  localStorage.setItem('cartCost' ,cost);
-  console.log(cost);
-  let totalPrice =document.getElementById('totalPrice');
-  totalPrice.innerHTML+=`${cost}`;
+	let cost = 0;
+	for (let i in cartItem) {
+		cost +=
+			parseFloat(cartItem[i].price) * parseFloat(cartItem[i].inCart);
+	}
+	localStorage.setItem('cartCost', cost);
+	console.log(cost);
+	let totalPrice = document.getElementById('totalPrice');
+	totalPrice.innerHTML += `${cost}`;
 
 }
-let cartCost = localStorage.getItem("cartCost");
 
-displayCart();
-totalCost();
 //.................................. Le Formulair.................................//
+var path = window.location.pathname;
+if(path.includes('cart.html'))
+{
+	displayCartNumber();
+	displayCart();
+	totalCost();
+	formCheck();
+}
+else
+{
+	// récupérer l'id de la commande à partir du lien confirmation.html?orderId=..
+	const paramsString = new URLSearchParams(window.location.search);
+	const idUrl = paramsString.get("orderId");
+	let orderIda = document.getElementById("orderId");
+	if (idUrl != null) {
+		let v = paramsString.toString().replace('orderId=', '');;
+		orderIda.innerHTML += `${v}`;
+		localStorage.clear();
+	}
+	else {
+		orderIda.innerHTML += "undefined";
+	}
 
+}
 
 
 
@@ -169,7 +189,7 @@ const validlastName = function (inputlastName) {
 		errorMsg.classList.add('text-danger');
 		return false;
 	}
-	
+
 };
 
 // *****************************validation aderesse*****************
@@ -226,7 +246,6 @@ const validcity = function (inputcity) {
 
 };
 
-
 // ********************validation email******************
 
 const validEmail = function (inputEmail) {
@@ -259,177 +278,132 @@ const validEmail = function (inputEmail) {
 
 };
 
-let form = document.querySelector(".cart__order__form");
+function formCheck() {
+	let form = document.querySelector(".cart__order__form");
 
-// Ecouter la modification du nom
-form.firstName.addEventListener('change', function () {
-	validfirstName(this);
-});
-// Ecouter la modification du prénom
-form.lastName.addEventListener('change', function () {
-	validlastName(this);
-});
-// Ecouter la modification de l'adresse
-form.address.addEventListener('change', function () {
-	validadress(this);
-});
-// Ecouter la modification de la ville
-form.city.addEventListener('change', function () {
-	validcity(this);
+	// Ecouter la modification du nom
+	form.firstName.addEventListener('change', function () {
+		validfirstName(this);
+	});
+	// Ecouter la modification du prénom
+	form.lastName.addEventListener('change', function () {
+		validlastName(this);
+	});
+	// Ecouter la modification de l'adresse
+	form.address.addEventListener('change', function () {
+		validadress(this);
+	});
+	// Ecouter la modification de la ville
+	form.city.addEventListener('change', function () {
+		validcity(this);
 
-});
-// Ecouter la modification de l'E-mail
-form.email.addEventListener('change', function () {
-	validEmail(this);
+	});
+	// Ecouter la modification de l'E-mail
+	form.email.addEventListener('change', function () {
+		validEmail(this);
 
-});
-
-const sendHttpRequest = (method, url, data) => {
-	return fetch(url, {
-		method: method,
-		body: JSON.stringify(data),
-		headers: data ? { 'content-type': 'application/json' } : {}
-
-	})
-		.then(response => {
-			if (response.status >= 400) {
-				// Reponse Not OK !
-				return response.json().then(errResData => {
-					const error = new Error('something went wrong');
-					error.data = errResData;
-					throw error;
-				});
-			}
-			return response.json();
-		});
-}
-
-// Ecouter la soumission du formulaire
-form.addEventListener('submit', function (e) {
-	e.preventDefault();
-	console.log("formulaire envoi en cours");
-	// pour casser l'envoi du formulaire
-	if (validfirstName(form.firstName)
-		&& validlastName(form.lastName)
-		&& validadress(form.address)
-		&& validcity(form.city)
-		&& validEmail(form.email)) {
-		let contact = {
-			firstName: form.firstName.value,
-			lastName: form.lastName.value,
-			address: form.address.value,
-			city: form.city.value,
-			email: form.email.value
-		};
-		let product = localStorage.getItem('cartProduct');
-		product = JSON.parse(product);
-
-		let i = 0;
-		let products = [];
-		for (let item in product) {
-			products.push(item);
-			i++;
-		}
-
-		console.log("contact:", contact);
-		console.log("products:", products);
-
-		let cartTotal = localStorage.getItem("cartCost");
-
-		// Récupération de la réponse du serveur
-		const options = {
-			method: "POST",
-			body: JSON.stringify({ contact, products }),
-			headers: {
-				'content-Type': 'application/json'
-			}
-		};
-
-		fetch("http://localhost:3000/api/products", {
-			method: "POST",
-			headers: { 
-		'Accept': 'application/json', 
-		'Content-Type': 'application/json' 
-		},
-			body: JSON.stringify({ contact, products })})
-		
-//		fetch('http://localhost:3000/api/products', options)
-		.then(response => response.json())
-		.then((response) => {
-
-			// // on récupere l'identifiant de l'orderId
-			let recupOrderId = response.orderId;
-			console.log("orderId", recupOrderId);
-
-			// // on déclare une nouvelle variable en insérant l'orderId et le prix total
-			let orderRecap = { recupOrderId, cartTotal };
-			console.log(orderRecap)
+	});
 
 
-			// // on stock les données de l'orderId et du prix total dans le localstorage
-			localStorage.setItem("result", JSON.stringify(orderRecap))
+	const sendHttpRequest = (method, url, data) => {
+		return fetch(url, {
+			method: method,
+			body: JSON.stringify(data),
+			headers: data ? { 'content-type': 'application/json' } : {}
 
-
-			// // on creer une fenetre demandant la validation de la commande 
-			let val = confirm("souhaitez-vous confirmer votre commande?");
-			console.log("confirmation : ", val);
-			if (val) {
-
-				printOrderRecap(cartTotal, recupOrderId);
-//				window.location.href = "../front/commande.html";
-				/*				document.querySelector("#commande").innerHTML = "Votre commande !";
-				
-							 let cmd = document.getElementById('commande');
-							 let order = document.createElement('div');
-							 cmd.appendChild(order);
-							 let p = document.createElement('p')
-							 p.innerHTML = 'ORINOCO vous remercie pour votre commande !'
-							 order.appendChild(p) 
-							 let totalOrder = document.createElement('p')
-							 totalOrder.innerHTML = 'Total de la commande : ' + cartTotal + ' €'
-							 order.appendChild(totalOrder)
-							 let orderId = document.createElement('p')
-							 orderId.innerHTML = 'Numéro de commande : ' + recupOrderId
-							 order.appendChild(orderId)
-				
-				*/
-				
-			}
 		})
+			.then(response => {
+				if (response.status >= 400) {
+					// Reponse Not OK !
+					return response.json().then(errResData => {
+						const error = new Error('something went wrong');
+						error.data = errResData;
+						throw error;
+					});
+				}
+				return response.json();
+			});
+	}
+
+	// Ecouter la soumission du formulaire
+	form.addEventListener('submit', function (e) {
+		e.preventDefault();
+		console.log("formulaire envoi en cours");
+		// pour casser l'envoi du formulaire
+		if (validfirstName(form.firstName)
+			&& validlastName(form.lastName)
+			&& validadress(form.address)
+			&& validcity(form.city)
+			&& validEmail(form.email)) {
+			let contact = {
+				firstName: form.firstName.value,
+				lastName: form.lastName.value,
+				address: form.address.value,
+				city: form.city.value,
+				email: form.email.value
+			};
+			let productStorage = localStorage.getItem('cartProduct');
+			productStorage = JSON.parse(productStorage);
 
 
-	//	form.submit();
-	//			console.log("contact est:",contact);
-	//			console.log("options est:",options);
+			let i = 0;
+			let products = [];
+			for (let item in productStorage) {
+				products.push(item);
+				i++;
+			}
+			if (products!= null) {
+
+				let cartTotal = localStorage.getItem("cartCost");
+				console.log("products:", products);
+
+				// Récupération de la réponse du serveur
+				const options = {
+					method: 'POST',
+					body: JSON.stringify({ contact, products }),
+					headers: {
+						'content-Type': 'application/json'
+					}
+				};
+
+				fetch("http://localhost:3000/api/products/order", options)
+					.then(response => response.json())
+					.then((response) => {
+						console.log("contact:", contact);
+						console.log("products:", products);
+
+						// // on récupere l'identifiant de l'orderId
+						let recupOrderId = response.orderId;
+						console.log("orderId", recupOrderId);
+
+						// // on déclare une nouvelle variable en insérant l'orderId et le prix total
+						let orderRecap = { recupOrderId, cartTotal };
+						console.log(orderRecap)
+
+
+						// // on stock les données de l'orderId et du prix total dans le localstorage
+						localStorage.setItem("result", JSON.stringify(orderRecap))
+
+
+						// // on creer une fenetre demandant la validation de la commande 
+						let val = confirm("souhaitez-vous confirmer votre commande?");
+						console.log("confirmation : ", val);
+						if (val) {
+							window.location.href = `../html/confirmation.html?orderId=${recupOrderId}`;
+						}
+					})
+
+			}
+			else {
+				console.log("le panié est vide");
+			}
+		}
+		else {
+			console.log("le formulaire n'est pas valide");
+		}
+	});
 
 }
-else {
-	console.log("le formulaire n'est pas valide");
-}
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -454,19 +428,4 @@ function printOrderRecap(cartTotal, recupOrderId) {
 	//	hide(document.getElementById('products-container'));
 
 };
-
-// function updateCart() {
-// 	let productNumbers = localStorage.getItem('cartNumbers');
-
-// 	if (productNumbers) {
-// 		document.querySelector('.cart span').textContent = productNumbers;
-// 	}
-// }
-// function hide(elements) {
-// 	elements = elements.length ? elements : [elements];
-// 	for (var index = 0; index < elements.length; index++) {
-// 		elements[index].style.display = 'none';
-// 	}
-// }
-// 		}
 
