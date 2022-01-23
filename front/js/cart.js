@@ -47,17 +47,47 @@ function displayCart() {
 			cart__item.setAttribute("data-id", `${prod._id}`);
 			cart__item.setAttribute("data-color", `${prod.colors}`);
 			cart__item.classList.add('cart__item')
+
 			let cart__item__img = document.createElement("div");
-			cart__item__img.innerHTML += `
-			<img src=${prod.imageUrl} alt=${prod.name} >
-			`
-			cart__item__img.classList.add('cart__item__img')
+			cart__item__img.classList.add("cart__item__img");
+			let img = document.createElement('img');
+			img.src = `${prod.imageUrl}`;
+			img.alt = `${prod.name}`;
 			cart__item.appendChild(cart__item__img);
+			cart__item__img.appendChild(img);
+
+	
+
+
+			/*cart__item__img.innerHTML += `
+			<img src=${prod.imageUrl} alt=${prod.name} >
+			`*/
+
+		
+
 			let cart__item__content = document.createElement("div");
 			cart__item.appendChild(cart__item__content);
 			let incart = parseInt(`${prod.inCart}`);
-			cart__item__img.innerHTML += `
-					<div class="cart__item__content__description">
+
+			let cart__item__content__description = document.createElement("div");
+			cart__item__content__description.classList.add("cart__item__content__description");
+			cart__item__content.appendChild(cart__item__content__description);
+			let h2 = document.createElement("h2");
+			h2.innerHTML = `${prod.name}`;
+			cart__item__content__description.appendChild(h2);
+
+			let p = document.createElement("p");
+			p.innerHTML = `${prod.colors}`;
+			cart__item__content__description.appendChild(p);
+
+			let p1 = document.createElement("p");
+			p1.innerHTML = `${prod.price}`;
+			cart__item__content__description.appendChild(p1);
+
+
+
+
+        /* <div class="cart__item__content__description">
 						<h2>${prod.name}</h2>
 						<p>${prod.colors}</p>
 						<p>${prod.price} €</p>
@@ -67,14 +97,44 @@ function displayCart() {
 						<p>Qté : </p>
 						<input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=`+ incart + `>
 						</div>
-						<div class="cart__item__content__settings__delete">
+					
+					<div class="cart__item__content__settings__delete">
 						<p class="deleteItem">Supprimer</p>
 						</div>
 					</div>
 					`
+					
+					*/
 
-					let total = `${prod.price}` * `${prod.inCart}`;
-		})
+			let cart__item__content__settings = document.createElement("div");
+			cart__item__content__settings.classList.add("cart__item__content__settings");
+			cart__item__content.appendChild(cart__item__content__settings);
+			let par = document.createElement("p");
+			cart__item__content__settings.appendChild(par);
+
+			let input = document.createElement("input");
+			input.type = "number";
+			input.class = "itemQuantity";
+			input.name = "itemQuantity";
+			input.min = "1";
+			input.max = "100";
+			input.value = `${+ incart}`;
+			cart__item__content__settings.appendChild(input);
+        
+
+			let cart__item__content__settings__delete = document.createElement("div");
+			cart__item__content__settings__delete.classList.add("cart__item__content__settings__delete");
+			cart__item__content__description.appendChild(cart__item__content__settings__delete);
+			let par2 = document.createElement("p");
+			par2.classList.add("deleteItem");
+			cart__item__content__settings__delete.appendChild(par2);
+			par2.innerHTML="Supprimer";
+
+	       /*   let total = `${prod.price}` * `${prod.inCart}`;*/
+	})
+
+
+		
 
 
 	}
@@ -84,6 +144,9 @@ function displayCart() {
 	}
 	
 }
+
+
+
 
 
 
@@ -107,6 +170,7 @@ function totalCost() {
 
 //.................................. Le Formulair.................................//
 var path = window.location.pathname;
+console.log("Path:",path);
 if(path.includes('cart.html'))
 {
 	displayCartNumber();

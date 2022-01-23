@@ -30,12 +30,35 @@ function printProducts(products) {
     link.setAttribute("href", `product.html?id=${prod._id}`);
     let article = document.createElement("article");
     link.appendChild(article);
-    article.innerHTML += `
-        <img src=${prod.imageUrl} id="img">
-        <h3 id="productName">${prod.name}</h3>
-        <p id="productDescription">${prod.altTxt}</p>
+//    article.innerHTML += `
+let image =document.createElement("img");
+image.id="img";
+image.src=`${prod.imageUrl}`;
+article.appendChild(image);
+
+let h3 = document.createElement("h3");
+h3.innerHTML=`${prod.name}` ;
+h3.classList.add("productName");
+article.appendChild(h3);
+
+let p = document.createElement("p");
+p.classList.add("productDescription");
+p.innerHTML=`${prod.altTxt}` ;
+article.appendChild(p);
+
+
+
+
+
+
+/*
+ document.createElement("h3");
+  id="productName">${prod.name}</h3>
+ 
+ document.createElement("p")
+   id="productDescription">${prod.altTxt}</p>
         `
-  }
+  */ }
   );
 
 };
