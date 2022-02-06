@@ -27,10 +27,15 @@ if (idUrl != null) {
         inCart: 0,
         _id: products._id
       };
-        // une fois le produit récupéré dans 'selectedproduct', on va l'afficher sur la page product.html
+      let Storedproduct = {
+        colors: products.colors,
+        inCart: 0,
+        _id: products._id
+      };
+      // une fois le produit récupéré dans 'selectedproduct', on va l'afficher sur la page product.html
       printProducts(Selectedproduct, products.colors);
 
-      addProducToCart(Selectedproduct);
+      addProducToCart(Storedproduct);
     })
 }
 // calculer le nombre de produits dans le panier pour mettre à jour le numéro dans le header
@@ -55,7 +60,7 @@ function printProducts(Selectedproduct, colors) {
   })
 
   divColorSetting.addEventListener('change', () => {
-    document.querySelector("input#quantity").value = productNumberinCart(Selectedproduct._id+divColorSetting.value);
+    document.querySelector("input#quantity").value = productNumberinCart(Selectedproduct._id + divColorSetting.value);
   })
 };
 
@@ -66,21 +71,19 @@ function printProducts(Selectedproduct, colors) {
 function addProducToCart(Selectedproduct) {
   let carts = document.querySelectorAll('.add-cart');
   carts[0].addEventListener('click', () => {
-    console.log(Selectedproduct);
     let settingQuantity = document.getElementById("quantity");
     let itemQuantity = parseInt(settingQuantity.value);
     let settingColor = document.getElementById("colors");
-    let itemColor= settingColor.value;
-    if(itemColor=='--SVP, choisissez une couleur --' || itemColor=='')
+    let itemColor = settingColor.value;
+    if (itemColor == '--SVP, choisissez une couleur --' || itemColor == '')
       alert("veuillez choisir une couleur");
-    else
-    {    
-        saveToLocalStorage(Selectedproduct, itemQuantity, itemColor);
-        cartNumbers(itemQuantity);
-        updateProductNumberDisplay();
-        console.log("added ",itemQuantity, "of product ",Selectedproduct._id);
-//        window.open("../html/cart.html");
-    }  
+    else {
+      saveToLocalStorage(Selectedproduct, itemQuantity, itemColor);
+      cartNumbers(itemQuantity);
+      updateProductNumberDisplay();
+      console.log("added ", itemQuantity, "of product ", Selectedproduct._id);
+      window.open("../html/cart.html","_self");
+    }
   })
 }
 
@@ -108,8 +111,7 @@ function cartNumbers(itemQuantity) {
 
 //enregistrer les produits dans localStorage
 function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
-  let localId=Selectedproduct._id+itemcolor;
-  console.log("local id:", localId);
+  let localId = Selectedproduct._id + itemcolor;
   let cartItem = localStorage.getItem('cartProduct');
   cartItem = JSON.parse(cartItem);
 
@@ -127,8 +129,8 @@ function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
   // id trouvé dans le local storge => on augumente seulement le inCart
   else if (cartItem[localId] != null) {
     cartItem[localId].inCart += parseInt(itemQuantity);
-  //transformer de obj en JSON 
-  localStorage.setItem('cartProduct', JSON.stringify(cartItem));
+    //transformer de obj en JSON 
+    localStorage.setItem('cartProduct', JSON.stringify(cartItem));
   }
   // le locale storage existe mais un nouveau item est selectionné
   else {
@@ -139,8 +141,8 @@ function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
       ...cartItem,
       [localId]: Selectedproduct
     };
-  //transformer de obj en JSON 
-  localStorage.setItem('cartProduct', JSON.stringify(cartItem));
+    //transformer de obj en JSON 
+    localStorage.setItem('cartProduct', JSON.stringify(cartItem));
   }
 }
 

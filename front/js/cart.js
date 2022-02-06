@@ -17,11 +17,6 @@
   */
 
 
-
-
-
-
-
 //pour afficher le nombre de produits dans le panier
 function displayCartNumber() {
 	let productNumbers = localStorage.getItem('cartNumbers');
@@ -49,8 +44,6 @@ function displayCart() {
 			let cart__item__img = document.createElement("div");
 			cart__item__img.classList.add("cart__item__img");
 			let img = document.createElement('img');
-			img.src = `${prod.imageUrl}`;
-			img.alt = `${prod.name}`;
 			cart__item.appendChild(cart__item__img);
 			cart__item__img.appendChild(img);
 
@@ -62,7 +55,6 @@ function displayCart() {
 			cart__item__content__description.classList.add("cart__item__content__description");
 			cart__item__content.appendChild(cart__item__content__description);
 			let h2 = document.createElement("h2");
-			h2.innerHTML = `${prod.name}`;
 			cart__item__content__description.appendChild(h2);
 
 			let p = document.createElement("p");
@@ -70,7 +62,6 @@ function displayCart() {
 			cart__item__content__description.appendChild(p);
 
 			let p1 = document.createElement("p");
-			p1.innerHTML = `${prod.price}`;
 			cart__item__content__description.appendChild(p1);
 
 
@@ -100,6 +91,18 @@ function displayCart() {
 			let pDeleteButton = document.createElement("p");
 			button.appendChild(pDeleteButton);
 			pDeleteButton.textContent = "supprimer";
+
+			// utiliser fetch pour récupérer les informations:
+			// name, price, imageURL
+			// et les mettre dans la page cart.html dans le bon element déjà crée
+			fetch("http://localhost:3000/api/products/" + `${prod._id}`)
+				.then(response => response.json())
+				.then(products => {
+					h2.textContent = `${products.name}`;
+					p1.textContent = `${products.price / 100}`;
+					img.src = `${products.imageUrl}`;
+					img.alt = `${products.name}`;
+				})
 		})
 
 	}
@@ -355,17 +358,14 @@ function formCheck() {
 			productStorage = JSON.parse(productStorage);
 
 
-			let i = 0;
 			let products = [];
 
-			for (let item in productStorage) {
-				products.push(item);
-				i++;
-			}
+			Object.values(productStorage).forEach(function (prod) {
+				products.push(prod._id);
+			})
 			if (products != null) {
 
-				let cartTotal = localStorage.getItem("cartCost");
-				console.log("products:", products);
+				let cartTotal = refreshCart();
 
 				// Récupération de la réponse du serveur
 				const options = {
@@ -416,37 +416,13 @@ function formCheck() {
 }
 
 
-
-
-function printOrderRecap(cartTotal, recupOrderId) {
-	console.log("printing order: ")
-	document.querySelector("#commande").innerHTML = "Votre commande !";
-	let order = ` 
-					<p> ORINOCO vous remercie pour votre commande ! </p>
-					<p> Total de la commande :    ${cartTotal} € </p>
-					<p> Numéro de commande :   ${recupOrderId} </p>
-						`
-		;
-
-
-	document.getElementById('commande').innerHTML = order;
-	hide(document.getElementById('panier'));
-	hide(document.getElementById('cartNumbers'));
-	//on supprime les anciennes données dans le localstorage
-	localStorage.clear();
-	refreshCart();
-	//	hide(document.getElementById('products-container'));
-
-};
-
+// supprimer un produit du local storage
 function deleteProduct() {
 	document.querySelectorAll(".deleteItem").forEach(deleteButton => {
 		deleteButton.addEventListener('click', () => {
-			console.log("Supprimer l'article numero", deleteButton.closest('.cart__item').getAttribute("data-id"));
 			let id = deleteButton.closest('.cart__item').getAttribute("data-id");
-			let color=deleteButton.closest('.cart__item__content__description').getElementsByTagName('p')[0].innerHTML;
-			id+=color;
-			console.log("id: ", id);
+			let color = deleteButton.closest('.cart__item__content__description').getElementsByTagName('p')[0].innerHTML;
+			id += color;
 			let cartItem = localStorage.getItem("cartProduct");
 			cartItem = JSON.parse(cartItem);
 			delete cartItem[id];
@@ -457,38 +433,51 @@ function deleteProduct() {
 	});
 }
 
+// metttre à jour le nombre de produits dans le local storage
 function updateSelectedProductNumber() {
 	document.getElementsByName("itemQuantity").forEach(itemQuantity => {
 
 		itemQuantity.addEventListener('change', () => {
-			let id=itemQuantity.closest('.cart__item').getAttribute("data-id");
-			let color=itemQuantity.closest('.cart__item__content__description').getElementsByTagName('p')[0].innerHTML;
-			id+=color;
-			let newincart=itemQuantity.value;
+			let id = itemQuantity.closest('.cart__item').getAttribute("data-id");
+			let color = itemQuantity.closest('.cart__item__content__description').getElementsByTagName('p')[0].innerHTML;
+			id += color;
+			let newincart = itemQuantity.value;
 			let cartItem = localStorage.getItem("cartProduct");
 			cartItem = JSON.parse(cartItem);
-			cartItem[id].inCart=newincart;
+			cartItem[id].inCart = newincart;
 			localStorage.setItem("cartProduct", JSON.stringify(cartItem));
 			refreshCart();
 		})
-})
+	})
 }
 
+// chaque fois qu'il y'a un changement (rafraichir la page, supprimer item ou ajouter/retirer un item dans le panier)
+// rafraichir les informations dans la page cart.html
 function refreshCart() {
 	let cartItem = localStorage.getItem("cartProduct");
 	cartItem = JSON.parse(cartItem);
 	let cartNumber = 0;
-	let cost = 0;
+	let cost = parseFloat(0);
 	if (cartItem != null) {
 		Object.values(cartItem).forEach(function (prod) {
 			cartNumber += parseInt(prod.inCart);
-			cost += parseFloat(prod.price) * parseFloat(prod.inCart);
-		});
+			fetch("http://localhost:3000/api/products/" + `${prod._id}`)
+				.then(response => response.json())
+				.then(products => {
+					let productprice = parseFloat(`${products.price / 100}`);
+					let poductincart = parseFloat(prod.inCart);
+					let productcost = (productprice * poductincart);
+					cost = Number(cost) + Number(productcost);
+					cost = (Math.round(cost * 100) / 100).toFixed(2);
+					document.querySelector('.cart span').textContent = cartNumber;
+					let totalPrice = document.getElementById('totalPrice');
+					totalPrice.textContent = cost;
+					return (cost);
+				}
+				);
+
+		})
+		localStorage.setItem('cartNumbers', cartNumber);
 	}
-	cost = (Math.round(cost * 100) / 100).toFixed(2);
-	localStorage.setItem('cartNumbers', cartNumber);
-	document.querySelector('.cart span').textContent =cartNumber;
-	let totalPrice = document.getElementById('totalPrice');
-	totalPrice.textContent=cost;
 }
 

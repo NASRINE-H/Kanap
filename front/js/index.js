@@ -8,16 +8,6 @@ fetch("http://localhost:3000/api/products")
     console.log(products);
     printProducts(products);
   });
-//<div id="panier">
-// <div class="products-container" id="products-container">
-// <div class="product-header">
-// <h5 class="product-title">PRODUCT</h5>
-// <h5 class="price">PRICE</h5>
-// <h5 class="quantity">QUANTITY</h5>
-//<h5 class="total">TOTAL</h5>
-//</div>
-//<div class="products">
-//</div> 
 
 //création d'une fonction d'affichage pour la structure du DOM
 function printProducts(products) {
@@ -30,7 +20,7 @@ function printProducts(products) {
     link.setAttribute("href", `product.html?id=${prod._id}`);
     let article = document.createElement("article");
     link.appendChild(article);
-    //    article.innerHTML += `
+
     let image = document.createElement("img");
     image.id = "img";
     image.src = `${prod.imageUrl}`;
@@ -45,21 +35,7 @@ function printProducts(products) {
     p.classList.add("productDescription");
     p.innerHTML = `${prod.altTxt}`;
     article.appendChild(p);
-
-
-
-
-
-
-
-/*
- document.createElement("h3");
-  id="productName">${prod.name}</h3>
- 
- document.createElement("p")
-   id="productDescription">${prod.altTxt}</p>
-        `
-  */ }
+  }
   );
 
 };
