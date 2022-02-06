@@ -1,4 +1,5 @@
 "use strict";
+// chercher le mot "id" dans le lien html de la page prdouit
 const paramsString = new URLSearchParams(window.location.search);
 const idUrl = paramsString.get("id");
 
@@ -12,13 +13,11 @@ const urlApi = function () {
 
 
 if (idUrl != null) {
-  // let url = "http://localhost:3000/api/products" + idUrl;
-
+  // récupérer les informations du produit selectionné par fetch
   fetch(urlApi())
-   .then(response => response.json())
-    // Récupérer la fonction pour l'afficher
+    .then(response => response.json())
     .then(products => {
-//       printProducts(products);
+
       let Selectedproduct = {
         name: products.name,
         price: products.price / 100,
@@ -28,185 +27,133 @@ if (idUrl != null) {
         inCart: 0,
         _id: products._id
       };
+        // une fois le produit récupéré dans 'selectedproduct', on va l'afficher sur la page product.html
       printProducts(Selectedproduct, products.colors);
-      startCartCounter(Selectedproduct);
 
-
+      addProducToCart(Selectedproduct);
     })
 }
-onLoadCartNumbers();
+// calculer le nombre de produits dans le panier pour mettre à jour le numéro dans le header
+updateProductNumberDisplay();
 
+
+//afficher les details du produit choisi 
 function printProducts(Selectedproduct, colors) {
+  //remplir les champs de la page porduct.html
   document.querySelector('#img').src = Selectedproduct.imageUrl;
-  document.querySelector("#title").innerHTML = Selectedproduct.name;
-  document.querySelector("#price").innerHTML = Selectedproduct.price;
-  document.querySelector("#description").innerHTML = Selectedproduct.description;
-  document.querySelector("#colors").innerHTML = Selectedproduct.colors;
-  document.querySelector("#quantity").innerHTML = Selectedproduct.inCart;
-//bouton choisir la couleur
-  let divSettCoSelect = document.getElementById("colors");
+  document.querySelector("#title").innerText = Selectedproduct.name;
+  document.querySelector("#price").innerText = Selectedproduct.price;
+  document.querySelector("#description").innerText = Selectedproduct.description;
 
- 
-
+  //remplir le bouton "choisir la couleur" avec les couleurs du produit choisi 
+  let divColorSetting = document.getElementById("colors");
   colors.forEach(color => {
-    let option =  document.createElement('option');
-    option.setAttribute("value", color);
-    divSettCoSelect.appendChild(option);
-    option.innerHTML = color ;
-
-    // creation d'un bouton pour la quantité
-    /*let divSettQuantity = document.createElement("div");
-    divSettQuantity.classList.add("item__content__settings__quantity");
-    let divSettQuanLabel = document.createElement("label");
-    divSettQuantity.appendChild(divSettQuanLabel);
-    divSettQuanLabel.setAttribute("for", "itemQuantity");
-    divSettQuanLabel.innerHTML = "Nombre d'article(s) (1-100)"*/
-
-    //creation input
-
-   /* let divSttQuanInput = document.createElement("input");
-    divSettQuantity.appendChild(divSttQuanInput);
-    divSttQuanInput.setAttribute("type", "number");
-    divSttQuanInput.setAttribute("name","itemQuantity");
-    divSttQuanInput.setAttribute("min","1");
-    divSttQuanInput.setAttribute("max","100");
-    divSttQuanInput.setAttribute("value","0");
-    divSttQuanInput.setAttribute("id","quantity");
-
-  }*/
-
-    
- /*colors.forEach(color => {
-    console.log(color);
     let option = document.createElement('option');
-    option.setAttribute("value",color);
-    option.innerHTML=color;
-    divSettCoSelect.appendChild(option);*/
-    
-  });
+    option.setAttribute("value", color);
+    divColorSetting.appendChild(option);
+    option.innerText = color;
+  })
 
-
-// let divSettCoLabel = document.getElementById("color-select");
-//sdivSettCoLabel.innerHTML = "choisir une couleur";
-
-//let divSettCoSelOption = document.getElementsByTagName("option");
-//divSettCoSelOption.innerHTML = "--SVP ,choisir ......";
-
-// let divSettCoQuantity = document.getElementById('')
-
+  divColorSetting.addEventListener('change', () => {
+    document.querySelector("input#quantity").value = productNumberinCart(Selectedproduct._id+divColorSetting.value);
+  })
+};
 
 
 //afficher le nombre de produits qui existe dant localStorage au panier
 //1) enregister un produit choisi dans le panier
 
-function startCartCounter(Selectedproduct) {
- //creation boutton
-   let divContent = document.createElement("div");
-   divContent.classList.add("item__content");
-   let divAdd = document.createElement("div");
-divContent.appendChild(divAdd);
-   divAdd.classList.add("item__content__addButton");
-
-   let divAddButton = document.createElement("button");
-   divAdd.appendChild(divAddButton);
-   divAddButton.id = "addToCart";
-   divAddButton.setAttribute("href", "cart.html");
-   divAddButton.innerText = "Ajouter au panier";
-
-  let selectedNumber=1;
-  let selectedColor="Rien";
+function addProducToCart(Selectedproduct) {
   let carts = document.querySelectorAll('.add-cart');
   carts[0].addEventListener('click', () => {
-    cartNumbers(Selectedproduct, selectedNumber,selectedColor);
-    totalCost();
-    onLoadCartNumbers();
+    console.log(Selectedproduct);
+    let settingQuantity = document.getElementById("quantity");
+    let itemQuantity = parseInt(settingQuantity.value);
+    let settingColor = document.getElementById("colors");
+    let itemColor= settingColor.value;
+    if(itemColor=='--SVP, choisissez une couleur --' || itemColor=='')
+      alert("veuillez choisir une couleur");
+    else
+    {    
+        saveToLocalStorage(Selectedproduct, itemQuantity, itemColor);
+        cartNumbers(itemQuantity);
+        updateProductNumberDisplay();
+        console.log("added ",itemQuantity, "of product ",Selectedproduct._id);
+//        window.open("../html/cart.html");
+    }  
   })
 }
 
-
 //pour afficher le nombre de produits dans le panier
-function onLoadCartNumbers() {
+function updateProductNumberDisplay() {
   let productNumbers = localStorage.getItem('cartNumbers');
-//  console.log(productNumbers);
   if (productNumbers) {
     document.querySelector('.cart span').textContent = productNumbers;
   }
-
 }
 
-
-// pour enregestrer le nombre de produit dan localStorage
-function cartNumbers(Selectedproduct,selectedNumber,selectedColor) {
+// pour enregistrer le nombre de produit dan localStorage
+function cartNumbers(itemQuantity) {
 
   let inCart = localStorage.getItem('cartNumbers');
-  console.log(selectedColor);
   inCart = parseInt(inCart);
 
   if (inCart) {
-    localStorage.setItem('cartNumbers', inCart + selectedNumber);
-    inCart = inCart + selectedNumber;
+    localStorage.setItem('cartNumbers', inCart + itemQuantity);
+    inCart = inCart + itemQuantity;
   } else {
-    localStorage.setItem('cartNumbers', selectedNumber);
-    document.querySelector('.cart span').textContent = selectedNumber;
+    localStorage.setItem('cartNumbers', itemQuantity);
   }
-  setItems(Selectedproduct)
-
-
-
 }
 
-//enregestrer les produits dans localStorage
-
-function setItems(Selectedproduct) {
+//enregistrer les produits dans localStorage
+function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
+  let localId=Selectedproduct._id+itemcolor;
+  console.log("local id:", localId);
   let cartItem = localStorage.getItem('cartProduct');
   cartItem = JSON.parse(cartItem);
+
+  // vérifier si local storage est vide
   if (cartItem == null) {
-    // local storage vide
-    // 1 dans inCart
-    Selectedproduct.inCart = 1;
-
-    // taguer l'obj
-    Selectedproduct.inCart = 1;
-
+    Selectedproduct.inCart = parseInt(itemQuantity);
+    Selectedproduct.colors = itemcolor;
     let cartItem =
     {
-      [Selectedproduct._id]: Selectedproduct
-
+      [localId]: Selectedproduct
     };
     //transformer de obj en JSON 
-
     localStorage.setItem('cartProduct', JSON.stringify(cartItem));
-
   }
-  else if (cartItem[Selectedproduct._id] != null) {// localStorage n'est pas vide 
-    //ajouter 1 dans inCart
-    cartItem[Selectedproduct._id].inCart += 1;
-    // taguer l'obj
-    localStorage.setItem('cartProduct', JSON.stringify(cartItem));
-
-
+  // id trouvé dans le local storge => on augumente seulement le inCart
+  else if (cartItem[localId] != null) {
+    cartItem[localId].inCart += parseInt(itemQuantity);
+  //transformer de obj en JSON 
+  localStorage.setItem('cartProduct', JSON.stringify(cartItem));
   }
+  // le locale storage existe mais un nouveau item est selectionné
   else {
-    // le locale storage existe mais un nouveau item est selectionné
-    Selectedproduct.inCart = 1;
+    Selectedproduct.inCart = parseInt(itemQuantity);
+    Selectedproduct.colors = itemcolor;
     //taguer l'obj
     cartItem = {
       ...cartItem,
-      [Selectedproduct._id]: Selectedproduct
+      [localId]: Selectedproduct
     };
-    //transformer de obj en json
-    localStorage.setItem('cartProduct', JSON.stringify(cartItem));
+  //transformer de obj en JSON 
+  localStorage.setItem('cartProduct', JSON.stringify(cartItem));
   }
 }
 
-// fair le prix totale
-function totalCost() {
+function productNumberinCart(prodcutid) {
   let cartItem = localStorage.getItem('cartProduct');
   cartItem = JSON.parse(cartItem);
-  let cost = 0;
-  for (let i in cartItem) {
-    cost +=
-      parseFloat(cartItem[i].price) * parseFloat(cartItem[i].inCart);
+  let inCart;
+  if (cartItem == null || cartItem[prodcutid] == null) {
+    // local storage vide
+    inCart = 0;
   }
-  localStorage.setItem('cartCost', cost);
+  else {
+    inCart = cartItem[prodcutid].inCart;
+  }
+  return (inCart);
 }
