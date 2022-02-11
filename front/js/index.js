@@ -14,7 +14,7 @@ function printProducts(products) {
   let itemsElemnt = document.getElementById("items");
 
   //On va parcourir le tableau et recuperer les informations et les afficher en HTML
-  products.forEach(/*function*/ prod => {
+  products.forEach( prod => {
     let link = document.createElement('a');
     itemsElemnt.appendChild(link);
     link.setAttribute("href", `product.html?id=${prod._id}`);
@@ -40,8 +40,8 @@ function printProducts(products) {
 
 };
 
-//pour afficher le nombre de produits dans le panier
+//pour afficher le nombre de produits dans le panier dans la page d'accueil
 let productNumbers = localStorage.getItem('cartNumbers');
 if (productNumbers) {
   document.querySelector('.cart span').textContent = productNumbers;
-};
+}

@@ -17,113 +17,20 @@
   */
 
 
-//pour afficher le nombre de produits dans le panier
-function displayCartNumber() {
-	let productNumbers = localStorage.getItem('cartNumbers');
-	if (productNumbers) {
-		document.querySelector('.cart span').textContent = productNumbers;
-	}
-}
-
-//afficher les produits selectionnés sur la page cart et fair le prix totale
-
-function displayCart() {
-	let cartItem = localStorage.getItem("cartProduct");
-	cartItem = JSON.parse(cartItem);
-
-	let cart_items = document.getElementById("cart__items");
-	if (cartItem != null) {
-		Object.values(cartItem).forEach(function (prod) {
-
-			let cart__item = document.createElement('article');
-			cart_items.appendChild(cart__item);
-			cart__item.setAttribute("data-id", `${prod._id}`);
-			cart__item.setAttribute("data-color", `${prod.colors}`);
-			cart__item.classList.add('cart__item')
-
-			let cart__item__img = document.createElement("div");
-			cart__item__img.classList.add("cart__item__img");
-			let img = document.createElement('img');
-			cart__item.appendChild(cart__item__img);
-			cart__item__img.appendChild(img);
-
-			let cart__item__content = document.createElement("div");
-			cart__item.appendChild(cart__item__content);
-			let incart = parseInt(`${prod.inCart}`);
-
-			let cart__item__content__description = document.createElement("div");
-			cart__item__content__description.classList.add("cart__item__content__description");
-			cart__item__content.appendChild(cart__item__content__description);
-			let h2 = document.createElement("h2");
-			cart__item__content__description.appendChild(h2);
-
-			let p = document.createElement("p");
-			p.innerHTML = `${prod.colors}`;
-			cart__item__content__description.appendChild(p);
-
-			let p1 = document.createElement("p");
-			cart__item__content__description.appendChild(p1);
-
-
-			let cart__item__content__settings = document.createElement("div");
-			cart__item__content__settings.classList.add("cart__item__content__settings");
-			cart__item__content__description.appendChild(cart__item__content__settings);
-			let par = document.createElement("p");
-			cart__item__content__settings.appendChild(par);
-
-			let input = document.createElement("input");
-			input.type = "number";
-			input.classList.add("itemQuantity");
-			input.name = "itemQuantity";
-			input.min = "1";
-			input.max = "100";
-			input.value = `${+ incart}`;
-			cart__item__content__settings.appendChild(input);
-
-
-			let cart__item__content__settings__delete = document.createElement("div");
-			cart__item__content__settings__delete.classList.add("cart__item__content__settings__delete");
-			cart__item__content__settings.appendChild(cart__item__content__settings__delete);
-			let button = document.createElement("button");
-			button.classList.add("deleteItem");
-			cart__item__content__settings__delete.appendChild(button);
-
-			let pDeleteButton = document.createElement("p");
-			button.appendChild(pDeleteButton);
-			pDeleteButton.textContent = "supprimer";
-
-			// utiliser fetch pour récupérer les informations:
-			// name, price, imageURL
-			// et les mettre dans la page cart.html dans le bon element déjà crée
-			fetch("http://localhost:3000/api/products/" + `${prod._id}`)
-				.then(response => response.json())
-				.then(products => {
-					h2.textContent = `${products.name}`;
-					p1.textContent = `${products.price / 100}`;
-					img.src = `${products.imageUrl}`;
-					img.alt = `${products.name}`;
-				})
-		})
-
-	}
-	else {
-		console.log("panier vide");
-	}
-
-}
-
-
-//.................................. Le Formulair.................................//
-var path = window.location.pathname;
+// cart.js est utilisé dans deux pages cart.html et confirmation.html
+// En fonction de la page choisi on lance les fonctions necessaires pour chaque page 
+let path = window.location.pathname;
 if (path.includes('cart.html')) {
+	// les fonctions actives seulement dans cart.html 
 	displayCartNumber();
 	displayCart();
-	formCheck();
-	updateSelectedProductNumber();
+	validForm();
+	changeProductNumber();
 	deleteProduct();
 	refreshCart();
 }
 else {
+	// fonction active dans les confirmation.html
 	// récupérer l'id de la commande à partir du lien confirmation.html?orderId=..
 	const paramsString = new URLSearchParams(window.location.search);
 	const idUrl = paramsString.get("orderId");
@@ -136,7 +43,6 @@ else {
 	else {
 		orderIda.innerHTML += "undefined";
 	}
-
 }
 
 
@@ -144,9 +50,9 @@ else {
 
 
 
+//.................................. Le Formulair.................................//
 
 // ****************validation prénom**************
-
 const validfirstName = function (inputfirstName) {
 	// creation de la reg exp pour validation prénom
 	let firstNameRegExp = new RegExp(
@@ -172,7 +78,6 @@ const validfirstName = function (inputfirstName) {
 	}
 
 };
-
 
 // ***************** Validation Nom ********************
 const validlastName = function (inputlastName) {
@@ -201,7 +106,6 @@ const validlastName = function (inputlastName) {
 };
 
 // *****************************validation aderesse*****************
-
 const validadress = function (inputadress) {
 	// creation de la reg exp pour validation adresse
 	let adressRegExp = new RegExp(
@@ -228,6 +132,7 @@ const validadress = function (inputadress) {
 
 
 };
+
 // ********************validation ville****************    
 const validcity = function (inputcity) {
 	// creation de la reg exp pour validation ville
@@ -255,7 +160,6 @@ const validcity = function (inputcity) {
 };
 
 // ********************validation email******************
-
 const validEmail = function (inputEmail) {
 	// creation de la reg exp pour validation email
 	let emailRegExp = new RegExp
@@ -286,7 +190,8 @@ const validEmail = function (inputEmail) {
 
 };
 
-function formCheck() {
+// ********************validation formulaire****************    
+function validForm() {
 	let form = document.querySelector(".cart__order__form");
 
 	// Ecouter la modification du nom
@@ -415,8 +320,101 @@ function formCheck() {
 
 }
 
+//pour afficher le nombre de produits dans le panier
+function displayCartNumber() {
+	let productNumbers = localStorage.getItem('cartNumbers');
+	if (productNumbers) {
+		document.querySelector('.cart span').textContent = productNumbers;
+	}
+}
 
-// supprimer un produit du local storage
+//afficher les produits selectionnés sur la page cart et fair le prix totale
+function displayCart() {
+	let cartItem = localStorage.getItem("cartProduct");
+	cartItem = JSON.parse(cartItem);
+
+	let cart_items = document.getElementById("cart__items");
+	if (cartItem != null) {
+		Object.values(cartItem).forEach(function (prod) {
+
+			let cart__item = document.createElement('article');
+			cart_items.appendChild(cart__item);
+			cart__item.setAttribute("data-id", `${prod._id}`);
+			cart__item.setAttribute("data-color", `${prod.colors}`);
+			cart__item.classList.add('cart__item')
+
+			let cart__item__img = document.createElement("div");
+			cart__item__img.classList.add("cart__item__img");
+			let img = document.createElement('img');
+			cart__item.appendChild(cart__item__img);
+			cart__item__img.appendChild(img);
+
+			let cart__item__content = document.createElement("div");
+			cart__item.appendChild(cart__item__content);
+			let incart = parseInt(`${prod.inCart}`);
+
+			let cart__item__content__description = document.createElement("div");
+			cart__item__content__description.classList.add("cart__item__content__description");
+			cart__item__content.appendChild(cart__item__content__description);
+			let h2 = document.createElement("h2");
+			cart__item__content__description.appendChild(h2);
+
+			let p = document.createElement("p");
+			p.innerHTML = `${prod.colors}`;
+			cart__item__content__description.appendChild(p);
+
+			let p1 = document.createElement("p");
+			cart__item__content__description.appendChild(p1);
+
+
+			let cart__item__content__settings = document.createElement("div");
+			cart__item__content__settings.classList.add("cart__item__content__settings");
+			cart__item__content__description.appendChild(cart__item__content__settings);
+			let par = document.createElement("p");
+			cart__item__content__settings.appendChild(par);
+
+			let input = document.createElement("input");
+			input.type = "number";
+			input.classList.add("itemQuantity");
+			input.name = "itemQuantity";
+			input.min = "1";
+			input.max = "100";
+			input.value = `${+ incart}`;
+			cart__item__content__settings.appendChild(input);
+
+
+			let cart__item__content__settings__delete = document.createElement("div");
+			cart__item__content__settings__delete.classList.add("cart__item__content__settings__delete");
+			cart__item__content__settings.appendChild(cart__item__content__settings__delete);
+			let button = document.createElement("button");
+			button.classList.add("deleteItem");
+			cart__item__content__settings__delete.appendChild(button);
+
+			let pDeleteButton = document.createElement("p");
+			button.appendChild(pDeleteButton);
+			pDeleteButton.textContent = "supprimer";
+
+			// utiliser fetch pour récupérer les informations:
+			// name, price, imageURL
+			// et les mettre dans la page cart.html dans le bon element déjà crée
+			fetch("http://localhost:3000/api/products/" + `${prod._id}`)
+				.then(response => response.json())
+				.then(products => {
+					h2.textContent = `${products.name}`;
+					p1.textContent = `${products.price / 100}`;
+					img.src = `${products.imageUrl}`;
+					img.alt = `${products.name}`;
+				})
+		})
+
+	}
+	else {
+		console.log("panier vide");
+	}
+
+}
+
+// supprimer le  produit selectionné  du local storage et du panier 
 function deleteProduct() {
 	document.querySelectorAll(".deleteItem").forEach(deleteButton => {
 		deleteButton.addEventListener('click', () => {
@@ -434,7 +432,7 @@ function deleteProduct() {
 }
 
 // metttre à jour le nombre de produits dans le local storage
-function updateSelectedProductNumber() {
+function changeProductNumber() {
 	document.getElementsByName("itemQuantity").forEach(itemQuantity => {
 
 		itemQuantity.addEventListener('change', () => {
@@ -466,7 +464,7 @@ function refreshCart() {
 				.then(products => {
 					let productprice = parseFloat(`${products.price / 100}`);
 					let poductincart = parseFloat(prod.inCart);
-					let productcost = (productprice * poductincart);
+					let productcost = productprice * poductincart;
 					cost = Number(cost) + Number(productcost);
 					cost = (Math.round(cost * 100) / 100).toFixed(2);
 					document.querySelector('.cart span').textContent = cartNumber;

@@ -3,6 +3,7 @@
 const paramsString = new URLSearchParams(window.location.search);
 const idUrl = paramsString.get("id");
 
+
 const urlApi = function () {
   if (idUrl == null) {
     return "http://localhost:3000/api/products";
@@ -17,7 +18,7 @@ if (idUrl != null) {
   fetch(urlApi())
     .then(response => response.json())
     .then(products => {
-
+      // utilisé dans l'affichage du product.html
       let Selectedproduct = {
         name: products.name,
         price: products.price / 100,
@@ -27,23 +28,24 @@ if (idUrl != null) {
         inCart: 0,
         _id: products._id
       };
+      // utilisé dans le local storage
       let Storedproduct = {
         colors: products.colors,
         inCart: 0,
         _id: products._id
       };
       // une fois le produit récupéré dans 'selectedproduct', on va l'afficher sur la page product.html
-      printProducts(Selectedproduct, products.colors);
-
+      showProduct(Selectedproduct, products.colors);
+      // enregistrer le produit dans local storage
       addProducToCart(Storedproduct);
     })
 }
 // calculer le nombre de produits dans le panier pour mettre à jour le numéro dans le header
-updateProductNumberDisplay();
+productNumberDisplay();
 
 
 //afficher les details du produit choisi 
-function printProducts(Selectedproduct, colors) {
+function showProduct(Selectedproduct, colors) {
   //remplir les champs de la page porduct.html
   document.querySelector('#img').src = Selectedproduct.imageUrl;
   document.querySelector("#title").innerText = Selectedproduct.name;
@@ -59,15 +61,13 @@ function printProducts(Selectedproduct, colors) {
     option.innerText = color;
   })
 
+  // afficher la quantité du produit de la couleur choisi (avec le change)
   divColorSetting.addEventListener('change', () => {
     document.querySelector("input#quantity").value = productNumberinCart(Selectedproduct._id + divColorSetting.value);
   })
 };
 
-
-//afficher le nombre de produits qui existe dant localStorage au panier
-//1) enregister un produit choisi dans le panier
-
+// enregister un produit choisi dans le localstorage sur appui du boutton ajouter au panier
 function addProducToCart(Selectedproduct) {
   let carts = document.querySelectorAll('.add-cart');
   carts[0].addEventListener('click', () => {
@@ -79,33 +79,18 @@ function addProducToCart(Selectedproduct) {
       alert("veuillez choisir une couleur");
     else {
       saveToLocalStorage(Selectedproduct, itemQuantity, itemColor);
-      cartNumbers(itemQuantity);
-      updateProductNumberDisplay();
+      productNumberDisplay();
       console.log("added ", itemQuantity, "of product ", Selectedproduct._id);
       window.open("../html/cart.html","_self");
     }
   })
 }
 
-//pour afficher le nombre de produits dans le panier
-function updateProductNumberDisplay() {
+//pour afficher le nombre de produits dans le panier (dans localstorage) dans la page product html
+function productNumberDisplay() {
   let productNumbers = localStorage.getItem('cartNumbers');
   if (productNumbers) {
     document.querySelector('.cart span').textContent = productNumbers;
-  }
-}
-
-// pour enregistrer le nombre de produit dan localStorage
-function cartNumbers(itemQuantity) {
-
-  let inCart = localStorage.getItem('cartNumbers');
-  inCart = parseInt(inCart);
-
-  if (inCart) {
-    localStorage.setItem('cartNumbers', inCart + itemQuantity);
-    inCart = inCart + itemQuantity;
-  } else {
-    localStorage.setItem('cartNumbers', itemQuantity);
   }
 }
 
@@ -126,7 +111,7 @@ function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
     //transformer de obj en JSON 
     localStorage.setItem('cartProduct', JSON.stringify(cartItem));
   }
-  // id trouvé dans le local storge => on augumente seulement le inCart
+  // id trouvé dans le local storge => on augmente seulement le inCart
   else if (cartItem[localId] != null) {
     cartItem[localId].inCart += parseInt(itemQuantity);
     //transformer de obj en JSON 
@@ -146,6 +131,7 @@ function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
   }
 }
 
+//recuperer le nombre de produits avec l'id "prodcutid" déjà dans localStorage pour l
 function productNumberinCart(prodcutid) {
   let cartItem = localStorage.getItem('cartProduct');
   cartItem = JSON.parse(cartItem);
