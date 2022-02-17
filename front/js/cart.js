@@ -51,12 +51,12 @@ else {
 
 
 //.................................. Le Formulair.................................//
-
+//les fonctions expressions
 // ****************validation prénom**************
 const validfirstName = function (inputfirstName) {
 	// creation de la reg exp pour validation prénom
 	let firstNameRegExp = new RegExp(
-		'[A-Za-z ]+$'
+		'^[A-Za-z ]{3,20}$'
 	);
 
 
@@ -71,7 +71,7 @@ const validfirstName = function (inputfirstName) {
 		errorMsg.classList.add('text-success');
 		return true;
 	} else {
-		errorMsg.innerHTML = 'Preom incorrect';
+		errorMsg.innerHTML = 'Prenom incorrect';
 		errorMsg.classList.remove('text-success');
 		errorMsg.classList.add('text-danger');
 		return false;
@@ -83,7 +83,7 @@ const validfirstName = function (inputfirstName) {
 const validlastName = function (inputlastName) {
 	// Creation de la reg exp pour validation nom
 	let lastNameRegExp = new RegExp(
-		'[A-Za-z ]+$'
+		'^[A-Za-z ]{3,20}$'
 	);
 
 	// Recuperation de la balise span
@@ -189,7 +189,7 @@ const validEmail = function (inputEmail) {
 	}
 
 };
-
+//regular fonction
 // ********************validation formulaire****************    
 function validForm() {
 	let form = document.querySelector(".cart__order__form");
@@ -328,7 +328,7 @@ function displayCartNumber() {
 	}
 }
 
-//afficher les produits selectionnés sur la page cart et fair le prix totale
+//afficher les produits selectionnés sur la page cart 
 function displayCart() {
 	let cartItem = localStorage.getItem("cartProduct");
 	cartItem = JSON.parse(cartItem);

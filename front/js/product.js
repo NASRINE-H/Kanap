@@ -3,7 +3,6 @@
 const paramsString = new URLSearchParams(window.location.search);
 const idUrl = paramsString.get("id");
 
-
 const urlApi = function () {
   if (idUrl == null) {
     return "http://localhost:3000/api/products";
@@ -24,9 +23,11 @@ if (idUrl != null) {
         price: products.price / 100,
         imageUrl: products.imageUrl,
         description: products.description,
+        altTxt: products.altTxt,
         colors: products.colors,
         inCart: 0,
-        _id: products._id
+        _id: products._id,
+        
       };
       // utilisé dans le local storage
       let Storedproduct = {
@@ -48,6 +49,7 @@ productNumberDisplay();
 function showProduct(Selectedproduct, colors) {
   //remplir les champs de la page porduct.html
   document.querySelector('#img').src = Selectedproduct.imageUrl;
+  document.querySelector('#img').alt = Selectedproduct.altTxt;
   document.querySelector("#title").innerText = Selectedproduct.name;
   document.querySelector("#price").innerText = Selectedproduct.price;
   document.querySelector("#description").innerText = Selectedproduct.description;
