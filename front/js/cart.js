@@ -30,18 +30,18 @@ if (path.includes('cart.html')) {
 	refreshCart();
 }
 else {
-	// fonction active dans les confirmation.html
+	// fonction active dans confirmation.html
 	// récupérer l'id de la commande à partir du lien confirmation.html?orderId=..
 	const paramsString = new URLSearchParams(window.location.search);
 	const idUrl = paramsString.get("orderId");
-	let orderIda = document.getElementById("orderId");
+	let orderIdElement = document.getElementById("orderId");
 	if (idUrl != null) {
-		let v = paramsString.toString().replace('orderId=', '');;
-		orderIda.innerHTML += `${v}`;
+		let orderIdValue = paramsString.toString().replace('orderId=', '');;
+		orderIdElement.innerHTML += `${orderIdValue}`;
 		localStorage.clear();
 	}
 	else {
-		orderIda.innerHTML += "undefined";
+		orderIdElement.innerHTML += "undefined";
 	}
 }
 
@@ -137,7 +137,7 @@ const validadress = function (inputadress) {
 const validcity = function (inputcity) {
 	// creation de la reg exp pour validation ville
 	let cityRegExp = new RegExp(
-		'[A-Za-z ]+$'
+		'^[A-Za-z ]+$'
 	);
 
 	// Recuperation de la balise span
@@ -220,26 +220,6 @@ function validForm() {
 	});
 
 
-	const sendHttpRequest = (method, url, data) => {
-		return fetch(url, {
-			method: method,
-			body: JSON.stringify(data),
-			headers: data ? { 'content-type': 'application/json' } : {}
-
-		})
-			.then(response => {
-				if (response.status >= 400) {
-					// Reponse Not OK !
-					return response.json().then(errResData => {
-						const error = new Error('something went wrong');
-						error.data = errResData;
-						throw error;
-					});
-				}
-				return response.json();
-			});
-	}
-
 	// Ecouter la soumission du formulaire
 	form.addEventListener('submit', function (e) {
 		e.preventDefault();
@@ -284,26 +264,12 @@ function validForm() {
 				fetch("http://localhost:3000/api/products/order", options)
 					.then(response => response.json())
 					.then((response) => {
-						console.log("contact:", contact);
-						console.log("products:", products);
-
 						// // on récupere l'identifiant de l'orderId
 						let recupOrderId = response.orderId;
-						console.log("orderId", recupOrderId);
-
-						// // on déclare une nouvelle variable en insérant l'orderId et le prix total
-						let orderRecap = { recupOrderId, cartTotal };
-						console.log(orderRecap)
-
-
-						// // on stock les données de l'orderId et du prix total dans le localstorage
-						localStorage.setItem("result", JSON.stringify(orderRecap))
-
 
 						// // on creer une fenetre demandant la validation de la commande 
-						let val = confirm("souhaitez-vous confirmer votre commande?");
-						console.log("confirmation : ", val);
-						if (val) {
+						let confirmButton = confirm("souhaitez-vous confirmer votre commande?");
+						if (confirmButton) {
 							window.location.href = `../html/confirmation.html?orderId=${recupOrderId}`;
 						}
 					})
@@ -403,7 +369,7 @@ function displayCart() {
 					h2.textContent = `${products.name}`;
 					p1.textContent = `${products.price / 100}`;
 					img.src = `${products.imageUrl}`;
-					img.alt = `${products.name}`;
+					img.alt = `${products.altTxt}`;
 				})
 		})
 
@@ -451,6 +417,7 @@ function changeProductNumber() {
 
 // chaque fois qu'il y'a un changement (rafraichir la page, supprimer item ou ajouter/retirer un item dans le panier)
 // rafraichir les informations dans la page cart.html
+// recalculer le prix total en fonctions des informations dans le local storage
 function refreshCart() {
 	let cartItem = localStorage.getItem("cartProduct");
 	cartItem = JSON.parse(cartItem);

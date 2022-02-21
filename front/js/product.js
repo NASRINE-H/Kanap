@@ -70,7 +70,7 @@ function showProduct(Selectedproduct, colors) {
 };
 
 // enregister un produit choisi dans le localstorage sur appui du boutton ajouter au panier
-function addProducToCart(Selectedproduct) {
+function addProducToCart(addQuantityAndColors) {
   let carts = document.querySelectorAll('.add-cart');
   carts[0].addEventListener('click', () => {
     let settingQuantity = document.getElementById("quantity");
@@ -80,9 +80,9 @@ function addProducToCart(Selectedproduct) {
     if (itemColor == '--SVP, choisissez une couleur --' || itemColor == '')
       alert("veuillez choisir une couleur");
     else {
-      saveToLocalStorage(Selectedproduct, itemQuantity, itemColor);
+      saveToLocalStorage(addQuantityAndColors, itemQuantity, itemColor);
       productNumberDisplay();
-      console.log("added ", itemQuantity, "of product ", Selectedproduct._id);
+      console.log("added ", itemQuantity, "of product ", addQuantityAndColors._id);
       window.open("../html/cart.html","_self");
     }
   })
@@ -115,7 +115,8 @@ function saveToLocalStorage(Selectedproduct, itemQuantity, itemcolor) {
   }
   // id trouvé dans le local storge => on augmente seulement le inCart
   else if (cartItem[localId] != null) {
-    cartItem[localId].inCart += parseInt(itemQuantity);
+    cartItem[localId].inCart += Number
+    (itemQuantity);
     //transformer de obj en JSON 
     localStorage.setItem('cartProduct', JSON.stringify(cartItem));
   }

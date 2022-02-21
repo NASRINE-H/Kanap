@@ -24,6 +24,7 @@ function printProducts(products) {
     let image = document.createElement("img");
     image.id = "img";
     image.src = `${prod.imageUrl}`;
+    image.alt=  `${prod.altTxt}`;
     article.appendChild(image);
 
     let h3 = document.createElement("h3");
@@ -33,7 +34,7 @@ function printProducts(products) {
 
     let p = document.createElement("p");
     p.classList.add("productDescription");
-    p.innerHTML = `${prod.altTxt}`;
+    p.innerHTML = `${prod.description}`;
     article.appendChild(p);
   }
   );
